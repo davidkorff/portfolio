@@ -157,3 +157,47 @@ for (let i = 0; i < navigationLinks.length; i++) {
 
   });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  var form = document.querySelector('[data-form]');
+  var modal = document.getElementById('thankYouModal');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var fullName = document.querySelector('input[name="fullname"]').value;
+    var email = document.querySelector('input[name="email"]').value;
+    var message = document.querySelector('textarea[name="message"]').value;
+
+    var payload = {
+      "fullName": fullName,
+      "email": email,
+      "message": message
+    }
+
+    // Convert payload to URL search parameters
+    var urlParams = new URLSearchParams(payload).toString();
+
+    fetch('https://hooks.zapier.com/hooks/catch/4360879/36rm455/?' + urlParams, {
+      method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+
+      // Show the modal
+      modal.style.display = "block";
+
+      // Set a timer to hide the modal after 2 seconds
+      setTimeout(function() {
+        modal.style.display = "none";
+      }, 2000);
+
+      // Reset the form
+      form.reset();
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  });
+});

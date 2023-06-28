@@ -204,41 +204,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 window.onload = function() {
-  // Fetch the IP address
-  fetch('https://api.ipify.org?format=json')
-    .then(response => response.json())
-    .then(data => {
-      const ipAddress = data.ip;
+  // Get the user agent, language, screen size, color depth and timezone offset
+  const data = {
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    screenSize: window.screen.width + 'x' + window.screen.height,
+    colorDepth: window.screen.colorDepth,
+    timezoneOffset: new Date().getTimezoneOffset()
+  };
 
-      // Fetch IP location data using ip-api
-      return fetch('http://ip-api.com/json/' + ipAddress)
-        .then(response => response.json())
-        .then(locationData => {
-          return {
-            ip: ipAddress,
-            city: locationData.city,
-            region: locationData.regionName,
-            country: locationData.country,
-            latitude: locationData.lat,
-            longitude: locationData.lon
-          };
-        });
-    })
-    .then(data => {
-      // Create the URL with the parameters
-      const params = new URLSearchParams(data).toString();
-      const webhookURL = 'https://hooks.zapier.com/hooks/catch/4360879/3dm10dd/';
+  // Create the URL with the parameters
+  const params = new URLSearchParams(data).toString();
+  const webhookURL = 'https://hooks.zapier.com/hooks/catch/4360879/3dm10dd/';
 
-      // Send a GET request to the webhook
-      fetch(`${webhookURL}?${params}`, { method: 'GET' })
-        .then(response => {
-          if (response.ok) {
-            console.log('Data sent successfully');
-          } else {
-            throw new Error('Request failed');
-          }
-        })
-        .catch(error => console.error(error));
+  // Send a GET request to the webhook
+  fetch(`${webhookURL}?${params}`, { method: 'GET' })
+    .then(response => {
+      if (response.ok) {
+        console.log('Data sent successfully');
+      } else {
+        throw new Error('Request failed');
+      }
     })
-    .catch(error => console.error('Failed to fetch IP address or location: ', error));
-}
+    .catch(error => console.error('Failed to send data: ', error));
+};
